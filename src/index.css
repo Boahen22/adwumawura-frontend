@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+/* Ensure full-height app layout */
+html, body, #root { height: 100%; }
+
+/* Optional: give browsers a hint about the scheme */
+:root { color-scheme: light; }
+html.dark { color-scheme: dark; }
+
+/* You can add additional dark overrides if you ever need them globally.
+   Components already theme themselves, so keeping this minimal. */
