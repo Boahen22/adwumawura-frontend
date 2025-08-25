@@ -69,9 +69,30 @@ export default function EmployerVerification() {
     setMsg('');
     setSending(true);
     try {
+      // 1) Upload to Cloudinary-backed endpoint to get a durable URL (no UI change)
+      const fdCloud = new FormData();
+      // backend /api/upload expects field name "file"
+      fdCloud.append('file', file);
+
+      const cloudRes = await api.post('/api/upload', fdCloud, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      const cloudUrl =
+        cloudRes?.data?.secure_url ||
+        cloudRes?.data?.url ||
+        '';
+
+      // 2) Continue your existing verification upload flow unchanged:
+      // send the original file as "document" exactly as before.
       const fd = new FormData();
-      // Canonical field name expected by the backend
       fd.append('document', file);
+
+      // If your verification API supports storing a URL, also provide it.
+      // This is additive and does not remove the original file upload.
+      if (cloudUrl) {
+        fd.append('documentUrl', cloudUrl);
+      }
 
       const res = await api.post('/api/verification/upload', fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
